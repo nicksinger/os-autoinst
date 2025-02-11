@@ -51,7 +51,7 @@ subtest 'error handling when loading test schedule' => sub {
     };
     subtest 'unable to load test module' => sub {
         $base_state->remove;
-        my $module = 'foo/bar';
+        my $module = "foo/bar\n";
         $bmwqemu::vars{SCHEDULE} = $module;
         combined_like {
             warning { throws_ok { load_test_schedule } qr/Can't locate $module\.pm/, 'error logged' }
@@ -60,6 +60,7 @@ subtest 'error handling when loading test schedule' => sub {
         if (is(ref $state, 'HASH', 'state file contains object')) {
             is($state->{component}, 'tests', 'state file contains component');
             like($state->{msg}, qr/unable to load foo\/bar\.pm/, 'state file contains error message');
+            is(@{$state->{component}}, 1, 'tests', 'state file component count is 1');
         }
     };
     subtest 'invalid productdir' => sub {
